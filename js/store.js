@@ -464,6 +464,56 @@
     };
   }
 
+  /* ------------- Recently viewed ------------- */
+  function markViewed(entity, id) {
+    var s = load();
+    s.recentlyViewed = (s.recentlyViewed || []).filter(function (r) { return !(r.entity === entity && r.id === id); });
+    s.recentlyViewed.unshift({ entity: entity, id: id, at: now() });
+    s.recentlyViewed = s.recentlyViewed.slice(0, 6);
+    save();
+    emit('recents:changed', s.recentlyViewed);
+    return s.recentlyViewed;
+  }
+
+  function getRecentlyViewed(limit) {
+    var s = load();
+    var recents = (s.recentlyViewed || []).slice(0, limit || 6);
+    // Resolve to records, drop dangling refs (deleted records)
+    return recents
+      .map(function (r) {
+        var rec = (s[r.entity] || []).find(function (x) { return x.id === r.id; });
+        if (!rec) return null;
+        return { entity: r.entity, record: rec, at: r.at };
+      })
+      .filter(Boolean);
+  }
+
+  /* ------------- Global search (palette) ------------- */
+  function globalSearch(query, limit) {
+    query = (query || '').trim().toLowerCase();
+    if (!query) return [];
+    var s = load();
+    limit = limit || 8;
+    var hits = [];
+
+    function tryEntity(entity, fields) {
+      (s[entity] || []).forEach(function (r) {
+        var text = fields.map(function (f) { return (r[f] || '').toString().toLowerCase(); }).join(' ');
+        if (text.indexOf(query) !== -1) {
+          hits.push({ entity: entity, record: r, score: text.indexOf(query) });
+        }
+      });
+    }
+    tryEntity('contacts', ['name', 'email', 'company', 'role']);
+    tryEntity('leads',    ['name', 'company', 'source', 'interest']);
+    tryEntity('deals',    ['name', 'company']);
+    tryEntity('activities', ['subject', 'company', 'contactName', 'notes']);
+    tryEntity('tasks',    ['title', 'priority', 'due']);
+
+    hits.sort(function (a, b) { return a.score - b.score; });
+    return hits.slice(0, limit);
+  }
+
   /* ------------- Reset ------------- */
   function reset() {
     // Keep users, restore demo data otherwise
@@ -529,6 +579,10 @@
     leadsBySource: leadsBySource,
     recentActivities: recentActivities,
     activitySummary: activitySummary,
+    // Recents & search
+    markViewed: markViewed,
+    getRecentlyViewed: getRecentlyViewed,
+    globalSearch: globalSearch,
     // Reset
     reset: reset,
     nuke: nuke,

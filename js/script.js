@@ -1629,8 +1629,764 @@
 
   function now() { return Date.now(); }
 
+  /* =============================================================
+     FEATURE PACK — Command palette, notifications, quick-add,
+     bulk actions, CSV export, detail panel, recently viewed.
+     ============================================================= */
+
+  /* Inject + button into the topbar actions area. Idempotent. */
+  function injectTopbarFeatures() {
+    var actions = document.querySelector('.topbar .actions');
+    if (!actions || actions.dataset.featurePack === '1') return;
+    actions.dataset.featurePack = '1';
+
+    var bell = actions.querySelector('.icon-btn[aria-label="Notifications"]');
+    if (bell && !bell.dataset.boundBell) {
+      bell.dataset.boundBell = '1';
+      bell.addEventListener('click', function (e) {
+        e.preventDefault();
+        openNotificationPanel(bell);
+      });
+    }
+
+    // Quick-add (+) button — inject between Help and Notifications icons
+    if (!actions.querySelector('[data-quick-add]')) {
+      var plusBtn = document.createElement('button');
+      plusBtn.className = 'icon-btn';
+      plusBtn.setAttribute('aria-label', 'Quick add');
+      plusBtn.setAttribute('data-quick-add', '');
+      plusBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+      // Insert after help icon (first icon-btn)
+      var firstIcon = actions.querySelector('.icon-btn');
+      if (firstIcon && firstIcon.nextSibling) {
+        actions.insertBefore(plusBtn, firstIcon.nextSibling);
+      } else {
+        actions.insertBefore(plusBtn, actions.firstChild);
+      }
+      plusBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        openQuickAddMenu(plusBtn);
+      });
+    }
+
+    // Command-palette launcher inside the topbar search box
+    var search = document.querySelector('.topbar .search .input');
+    if (search && !search.dataset.boundPalette) {
+      search.dataset.boundPalette = '1';
+      search.addEventListener('focus', function () {
+        openCommandPalette(search.value);
+      });
+    }
+  }
+
+  /* =============================================================
+     Popover helper — generic positioned dropdown
+     ============================================================= */
+  function openPopover(anchor, contentHtml, onMount) {
+    closePopovers();
+    var pop = document.createElement('div');
+    pop.className = 'popover';
+    pop.innerHTML = contentHtml;
+    document.body.appendChild(pop);
+
+    var rect = anchor.getBoundingClientRect();
+    pop.style.top = (rect.bottom + 8) + 'px';
+    var width = pop.offsetWidth;
+    var right = window.innerWidth - rect.right;
+    pop.style.right = Math.max(8, right) + 'px';
+
+    requestAnimationFrame(function () { pop.classList.add('show'); });
+
+    function close() {
+      pop.classList.remove('show');
+      setTimeout(function () { pop.remove(); }, 160);
+      document.removeEventListener('click', onDocClick, true);
+      document.removeEventListener('keydown', onKey);
+    }
+    function onDocClick(e) {
+      if (!pop.contains(e.target) && e.target !== anchor && !anchor.contains(e.target)) close();
+    }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('click', onDocClick, true);
+    document.addEventListener('keydown', onKey);
+
+    if (typeof onMount === 'function') onMount(pop, close);
+    return { el: pop, close: close };
+  }
+
+  function closePopovers() {
+    document.querySelectorAll('.popover').forEach(function (p) { p.remove(); });
+  }
+
+  /* =============================================================
+     Quick-add menu
+     ============================================================= */
+  function openQuickAddMenu(anchor) {
+    var items = [
+      { label: 'New Contact',  shortcut: 'C', modal: 'add-contact',  icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>' },
+      { label: 'New Lead',     shortcut: 'L', modal: 'add-lead',     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>' },
+      { label: 'New Deal',     shortcut: 'D', modal: 'add-deal',     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>' },
+      { label: 'Log Activity', shortcut: 'A', modal: 'add-activity', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>' },
+      { label: 'Add Task',     shortcut: 'T', modal: 'add-task',     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>' }
+    ];
+    var html = '<div class="popover-head"><strong>Quick add</strong><span class="text-soft text-xs">Add anything from anywhere</span></div>' +
+      '<div class="popover-list">' +
+      items.map(function (it) {
+        return '<button class="popover-item" data-quick-modal="' + it.modal + '">' +
+          '<span class="popover-icon">' + it.icon + '</span>' +
+          '<span class="popover-label">' + it.label + '</span>' +
+          '<span class="kbd-mini">' + it.shortcut + '</span>' +
+        '</button>';
+      }).join('') +
+      '</div>';
+    openPopover(anchor, html, function (pop, close) {
+      pop.querySelectorAll('[data-quick-modal]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var which = b.getAttribute('data-quick-modal');
+          close();
+          openModal(which);
+        });
+      });
+    });
+  }
+
+  /* =============================================================
+     Notification panel
+     ============================================================= */
+  function openNotificationPanel(anchor) {
+    if (!window.Store) return;
+    var recents = Store.recentActivities(8);
+    var html = '<div class="popover-head"><strong>Notifications</strong>' +
+      '<button class="popover-link" data-mark-all-read>Mark all as read</button></div>' +
+      '<div class="popover-list scroll">' +
+      (recents.length ? recents.map(function (a) {
+        return '<div class="popover-notif">' +
+          '<span class="popover-icon">' + notifIcon(a.type) + '</span>' +
+          '<div class="popover-notif-body">' +
+            '<div class="popover-notif-title">' + escapeHtml(a.subject || 'Activity') + '</div>' +
+            '<div class="popover-notif-meta">' +
+              (a.company ? escapeHtml(a.company) + ' · ' : '') +
+              relTime(a.timestamp) +
+            '</div>' +
+          '</div>' +
+          '<span class="popover-dot"></span>' +
+        '</div>';
+      }).join('') : '<div class="popover-empty">No notifications yet</div>') +
+      '</div>' +
+      '<div class="popover-foot"><a href="activities.html" class="popover-link">View all activities →</a></div>';
+    openPopover(anchor, html, function (pop, close) {
+      var markRead = pop.querySelector('[data-mark-all-read]');
+      if (markRead) markRead.addEventListener('click', function () {
+        pop.querySelectorAll('.popover-dot').forEach(function (d) { d.remove(); });
+        showToast('All notifications marked as read', 'info');
+      });
+    });
+  }
+
+  function notifIcon(type) {
+    var map = {
+      call:     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+      email:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+      meeting:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+      proposal: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+      note:     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+      task:     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>',
+      won:      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'
+    };
+    return map[type] || '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>';
+  }
+
+  /* =============================================================
+     Command Palette  (⌘K)
+     ============================================================= */
+  var paletteOpen = false;
+  function openCommandPalette(initialQuery) {
+    if (paletteOpen) return;
+    paletteOpen = true;
+
+    var backdrop = document.createElement('div');
+    backdrop.className = 'palette-backdrop';
+    backdrop.innerHTML =
+      '<div class="palette" role="dialog" aria-modal="true">' +
+        '<div class="palette-input-wrap">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+          '<input class="palette-input" type="text" placeholder="Search contacts, deals, actions…" />' +
+          '<span class="kbd">esc</span>' +
+        '</div>' +
+        '<div class="palette-body" data-palette-results></div>' +
+        '<div class="palette-foot">' +
+          '<span><span class="kbd">↑</span> <span class="kbd">↓</span> Navigate</span>' +
+          '<span><span class="kbd">⏎</span> Select</span>' +
+          '<span><span class="kbd">esc</span> Close</span>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(backdrop);
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(function () { backdrop.classList.add('show'); });
+
+    var input = backdrop.querySelector('.palette-input');
+    var resultsEl = backdrop.querySelector('[data-palette-results]');
+    var cursor = 0;
+    var results = [];
+
+    function close() {
+      backdrop.classList.remove('show');
+      document.body.style.overflow = '';
+      paletteOpen = false;
+      document.removeEventListener('keydown', onKey);
+      setTimeout(function () { backdrop.remove(); }, 160);
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); cursor = Math.min(results.length - 1, cursor + 1); renderHighlight(); }
+      if (e.key === 'ArrowUp')   { e.preventDefault(); cursor = Math.max(0, cursor - 1); renderHighlight(); }
+      if (e.key === 'Enter')     { e.preventDefault(); selectResult(cursor); }
+    }
+    document.addEventListener('keydown', onKey);
+    backdrop.addEventListener('click', function (e) { if (e.target === backdrop) close(); });
+
+    function getActions() {
+      return [
+        { kind: 'action', label: 'Go to Dashboard',  hint: 'Page',   onSelect: function () { goto('dashboard.html'); }, icon: 'page' },
+        { kind: 'action', label: 'Go to Contacts',   hint: 'Page',   onSelect: function () { goto('contacts.html'); }, icon: 'page' },
+        { kind: 'action', label: 'Go to Leads',      hint: 'Page',   onSelect: function () { goto('leads.html'); }, icon: 'page' },
+        { kind: 'action', label: 'Go to Deals',      hint: 'Page',   onSelect: function () { goto('deals.html'); }, icon: 'page' },
+        { kind: 'action', label: 'Go to Activities', hint: 'Page',   onSelect: function () { goto('activities.html'); }, icon: 'page' },
+        { kind: 'action', label: 'Go to Reports',    hint: 'Page',   onSelect: function () { goto('reports.html'); }, icon: 'page' },
+        { kind: 'action', label: 'Go to Settings',   hint: 'Page',   onSelect: function () { goto('settings.html'); }, icon: 'page' },
+        { kind: 'action', label: 'Add new Contact',  hint: 'Action', onSelect: function () { openModal('add-contact'); }, icon: 'plus' },
+        { kind: 'action', label: 'Add new Lead',     hint: 'Action', onSelect: function () { openModal('add-lead'); }, icon: 'plus' },
+        { kind: 'action', label: 'Add new Deal',     hint: 'Action', onSelect: function () { openModal('add-deal'); }, icon: 'plus' },
+        { kind: 'action', label: 'Log Activity',     hint: 'Action', onSelect: function () { openModal('add-activity'); }, icon: 'plus' },
+        { kind: 'action', label: 'Add Task',         hint: 'Action', onSelect: function () { openModal('add-task'); }, icon: 'plus' },
+        { kind: 'action', label: 'Toggle dark mode', hint: 'Action', onSelect: function () { if (window.Store) Store.setTheme(Store.getTheme() === 'light' ? 'dark' : 'light'); showToast('Theme switched', 'info'); }, icon: 'theme' },
+        { kind: 'action', label: 'Logout',           hint: 'Action', onSelect: function () { if (window.Store) Store.logout(); window.location.href = 'index.html'; }, icon: 'logout' }
+      ];
+    }
+
+    function goto(href) {
+      var file = href.toLowerCase();
+      var pageKey = file.replace('.html', '');
+      document.body.setAttribute('data-page', pageKey);
+      if (typeof navigateTo === 'function' && document.querySelector('.app .main')) {
+        navigateTo(href);
+      } else {
+        window.location.href = href;
+      }
+    }
+
+    function paletteIcon(name) {
+      var map = {
+        page:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+        plus:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+        theme:   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+        logout:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>',
+        contact: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
+        lead:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/></svg>',
+        deal:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/></svg>',
+        activity:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+        task:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/></svg>'
+      };
+      return map[name] || map.page;
+    }
+
+    function render(query) {
+      results = [];
+      if (!query) {
+        // Default view: actions
+        getActions().forEach(function (a) { results.push(a); });
+      } else {
+        // Filter actions
+        var actions = getActions().filter(function (a) {
+          return a.label.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+        });
+        actions.forEach(function (a) { results.push(a); });
+
+        // Then global content search
+        if (window.Store) {
+          var hits = Store.globalSearch(query, 8);
+          hits.forEach(function (h) {
+            var name = h.record.name || h.record.subject || h.record.title || '—';
+            var sub  = h.record.company || h.record.email || h.record.stage || '';
+            var iconMap = { contacts: 'contact', leads: 'lead', deals: 'deal', activities: 'activity', tasks: 'task' };
+            results.push({
+              kind: 'record',
+              entity: h.entity,
+              record: h.record,
+              label: name,
+              hint: h.entity.charAt(0).toUpperCase() + h.entity.slice(1, -1),
+              sub: sub,
+              icon: iconMap[h.entity] || 'page',
+              onSelect: function () {
+                Store.markViewed(h.entity, h.record.id);
+                openDetailPanel(h.entity, h.record.id);
+              }
+            });
+          });
+        }
+      }
+
+      cursor = 0;
+      resultsEl.innerHTML = results.length ? results.map(function (r, i) {
+        return '<div class="palette-row" data-i="' + i + '">' +
+          '<span class="palette-icon">' + paletteIcon(r.icon) + '</span>' +
+          '<span class="palette-label">' + escapeHtml(r.label) +
+            (r.sub ? ' <span class="palette-sub">— ' + escapeHtml(r.sub) + '</span>' : '') +
+          '</span>' +
+          '<span class="palette-hint">' + escapeHtml(r.hint) + '</span>' +
+        '</div>';
+      }).join('') :
+        '<div class="palette-empty"><div style="font-size:24px;margin-bottom:8px;">🔎</div>No results for "<strong style="color:var(--fg);">' + escapeHtml(query) + '</strong>"</div>';
+
+      renderHighlight();
+
+      resultsEl.querySelectorAll('.palette-row').forEach(function (row) {
+        row.addEventListener('mouseenter', function () { cursor = Number(row.dataset.i); renderHighlight(); });
+        row.addEventListener('click', function () { selectResult(Number(row.dataset.i)); });
+      });
+    }
+
+    function renderHighlight() {
+      resultsEl.querySelectorAll('.palette-row').forEach(function (r, i) {
+        r.classList.toggle('active', i === cursor);
+        if (i === cursor) r.scrollIntoView({ block: 'nearest' });
+      });
+    }
+
+    function selectResult(i) {
+      var r = results[i];
+      if (!r) return;
+      close();
+      setTimeout(function () { r.onSelect(); }, 80);
+    }
+
+    input.addEventListener('input', function () { render(input.value); });
+    input.value = initialQuery || '';
+    render(input.value);
+    setTimeout(function () { input.focus(); }, 80);
+  }
+
+  /* =============================================================
+     Detail slide-over panel
+     ============================================================= */
+  function openDetailPanel(entity, id) {
+    if (!window.Store) return;
+    var record = Store.get(entity, id);
+    if (!record) return;
+
+    closeDetailPanel();
+    Store.markViewed(entity, id);
+
+    var html = buildDetailPanelHtml(entity, record);
+    var wrap = document.createElement('div');
+    wrap.className = 'detail-overlay';
+    wrap.innerHTML = '<div class="detail-backdrop"></div>' + html;
+    document.body.appendChild(wrap);
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(function () { wrap.classList.add('show'); });
+
+    function close() {
+      wrap.classList.remove('show');
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', onKey);
+      setTimeout(function () { wrap.remove(); }, 200);
+    }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKey);
+
+    wrap.querySelector('.detail-backdrop').addEventListener('click', close);
+    wrap.querySelector('[data-detail-close]').addEventListener('click', close);
+
+    wrap.querySelectorAll('[data-detail-delete]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var ok = window.confirm('Delete this record? This cannot be undone.');
+        if (!ok) return;
+        Store.remove(entity, id);
+        close();
+        showToast('Deleted');
+        initMainScope();
+      });
+    });
+
+    closePopovers();
+  }
+  function closeDetailPanel() {
+    document.querySelectorAll('.detail-overlay').forEach(function (o) { o.remove(); });
+    document.body.style.overflow = '';
+  }
+
+  function buildDetailPanelHtml(entity, r) {
+    var title = r.name || r.subject || r.title || 'Record';
+    var subtitle = r.company || r.email || r.stage || r.priority || '';
+    var fieldsHtml = '';
+
+    if (entity === 'contacts') {
+      fieldsHtml = detailField('Email', r.email) + detailField('Phone', r.phone) +
+        detailField('Company', r.company) + detailField('Role', r.role) +
+        detailField('Status', r.status);
+    } else if (entity === 'leads') {
+      fieldsHtml = detailField('Company', r.company) + detailField('Source', r.source) +
+        detailField('Interest', r.interest) + detailField('Stage', r.stage) +
+        detailField('Score', r.score) + detailField('Owner', r.owner);
+    } else if (entity === 'deals') {
+      fieldsHtml = detailField('Company', r.company) +
+        detailField('Value', '$' + (Number(r.value) || 0).toLocaleString()) +
+        detailField('Stage', r.stage) + detailField('Temperature', r.temp) +
+        detailField('Close date', r.closeDate ? new Date(r.closeDate).toLocaleDateString() : '');
+    } else if (entity === 'activities') {
+      fieldsHtml = detailField('Type', r.type) + detailField('Company', r.company) +
+        detailField('Contact', r.contactName) +
+        detailField('When', r.timestamp ? new Date(r.timestamp).toLocaleString() : '') +
+        detailField('Notes', r.notes);
+    } else if (entity === 'tasks') {
+      fieldsHtml = detailField('Due', r.due) + detailField('Priority', r.priority) +
+        detailField('Notes', r.notes) +
+        detailField('Status', r.completed ? 'Completed' : 'Open');
+    }
+
+    // Related activities for contacts / deals / leads
+    var related = '';
+    if (window.Store && (entity === 'contacts' || entity === 'leads' || entity === 'deals')) {
+      var company = r.company || (r.name || '');
+      var name = r.name || '';
+      var matches = Store.list('activities').filter(function (a) {
+        return (a.company && a.company === company) || (a.contactName && a.contactName === name);
+      }).sort(function (a, b) { return b.timestamp - a.timestamp; }).slice(0, 4);
+      if (matches.length) {
+        related = '<div class="detail-section-title">Recent activity</div>' +
+          '<div class="detail-activity">' +
+          matches.map(function (a) {
+            return '<div class="detail-activity-item"><span>' + notifIcon(a.type) + '</span>' +
+              '<div><div style="font-size:13px;font-weight:500;">' + escapeHtml(a.subject || 'Activity') + '</div>' +
+              '<div class="text-soft text-xs">' + relTime(a.timestamp) + '</div></div></div>';
+          }).join('') +
+          '</div>';
+      }
+    }
+
+    return '<aside class="detail-panel" role="dialog" aria-modal="true">' +
+      '<header class="detail-head">' +
+        '<div class="detail-head-main">' +
+          '<div class="avatar lg" aria-hidden="true">' + escapeHtml((title || 'NN').split(/\s+/).map(function(p){return p[0]||'';}).slice(0,2).join('').toUpperCase()) + '</div>' +
+          '<div>' +
+            '<h3>' + escapeHtml(title) + '</h3>' +
+            (subtitle ? '<p class="text-muted text-sm">' + escapeHtml(subtitle) + '</p>' : '') +
+          '</div>' +
+        '</div>' +
+        '<button class="modal-close" data-detail-close aria-label="Close">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>' +
+        '</button>' +
+      '</header>' +
+      '<div class="detail-body">' +
+        '<div class="detail-section-title">Details</div>' +
+        '<div class="detail-fields">' + fieldsHtml + '</div>' +
+        related +
+      '</div>' +
+      '<footer class="detail-foot">' +
+        '<button class="btn btn-secondary btn-sm" data-detail-close>Close</button>' +
+        '<button class="btn btn-danger btn-sm" data-detail-delete>Delete</button>' +
+      '</footer>' +
+    '</aside>';
+  }
+
+  function detailField(label, value) {
+    if (value == null || value === '') return '';
+    return '<div class="detail-field">' +
+      '<div class="detail-field-label">' + escapeHtml(label) + '</div>' +
+      '<div class="detail-field-value">' + escapeHtml(String(value)) + '</div>' +
+    '</div>';
+  }
+
+  /* =============================================================
+     Bulk actions (multi-select rows)
+     ============================================================= */
+  function initBulkActions() {
+    document.querySelectorAll('table.data').forEach(function (table) {
+      if (table.dataset.bulkInit === '1') return;
+      table.dataset.bulkInit = '1';
+
+      var headCb = table.querySelector('thead input[type="checkbox"]');
+      var allCbs = function () { return table.querySelectorAll('tbody tr:not(.empty-state-row) input[type="checkbox"]'); };
+
+      if (headCb) {
+        headCb.addEventListener('change', function () {
+          allCbs().forEach(function (cb) {
+            // Only affect visible rows
+            var row = cb.closest('tr');
+            if (row && row.style.display === 'none') return;
+            cb.checked = headCb.checked;
+          });
+          syncSelectionBar();
+        });
+      }
+
+      table.addEventListener('change', function (e) {
+        if (e.target && e.target.type === 'checkbox' && e.target.closest('tbody')) {
+          syncSelectionBar();
+        }
+      });
+    });
+    syncSelectionBar();
+  }
+
+  function syncSelectionBar() {
+    var table = document.querySelector('table.data');
+    if (!table) { closeSelectionBar(); return; }
+    var selected = Array.from(table.querySelectorAll('tbody tr:not(.empty-state-row) input[type="checkbox"]:checked'));
+    if (!selected.length) { closeSelectionBar(); return; }
+
+    var bar = document.querySelector('.selection-bar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.className = 'selection-bar';
+      bar.innerHTML =
+        '<span class="selection-count"></span>' +
+        '<button class="btn btn-ghost btn-sm" data-bulk="clear">Clear</button>' +
+        '<button class="btn btn-secondary btn-sm" data-bulk="export">Export CSV</button>' +
+        '<button class="btn btn-danger btn-sm" data-bulk="delete">Delete</button>';
+      document.body.appendChild(bar);
+      requestAnimationFrame(function () { bar.classList.add('show'); });
+
+      bar.querySelector('[data-bulk="clear"]').addEventListener('click', function () {
+        document.querySelectorAll('table.data tbody input[type="checkbox"]:checked').forEach(function (cb) { cb.checked = false; });
+        var hd = document.querySelector('table.data thead input[type="checkbox"]');
+        if (hd) hd.checked = false;
+        closeSelectionBar();
+      });
+      bar.querySelector('[data-bulk="delete"]').addEventListener('click', function () {
+        var checked = Array.from(document.querySelectorAll('table.data tbody input[type="checkbox"]:checked'));
+        var rows = checked.map(function (cb) { return cb.closest('tr'); }).filter(Boolean);
+        var ok = window.confirm('Delete ' + rows.length + ' record' + (rows.length === 1 ? '' : 's') + '? This cannot be undone.');
+        if (!ok) return;
+        rows.forEach(function (row) {
+          var entity = row.getAttribute('data-entity');
+          var id = row.getAttribute('data-id');
+          if (window.Store && entity && id) Store.remove(entity, id);
+        });
+        closeSelectionBar();
+        showToast(rows.length + ' record' + (rows.length === 1 ? '' : 's') + ' deleted');
+        initMainScope();
+      });
+      bar.querySelector('[data-bulk="export"]').addEventListener('click', function () {
+        var checked = Array.from(document.querySelectorAll('table.data tbody input[type="checkbox"]:checked'));
+        var rows = checked.map(function (cb) { return cb.closest('tr'); }).filter(Boolean);
+        if (!rows.length) return;
+        var entity = rows[0].getAttribute('data-entity');
+        if (window.Store && entity) {
+          var ids = rows.map(function (r) { return r.getAttribute('data-id'); });
+          var records = Store.list(entity).filter(function (r) { return ids.indexOf(r.id) !== -1; });
+          exportCsv(entity, records);
+        }
+      });
+    }
+    var n = selected.length;
+    bar.querySelector('.selection-count').innerHTML = '<strong>' + n + '</strong> selected';
+  }
+
+  function closeSelectionBar() {
+    var bar = document.querySelector('.selection-bar');
+    if (!bar) return;
+    bar.classList.remove('show');
+    setTimeout(function () { bar.remove(); }, 180);
+  }
+
+  /* =============================================================
+     CSV Export
+     ============================================================= */
+  function initCSVExport() {
+    document.querySelectorAll('[data-export-csv]').forEach(function (btn) {
+      if (btn.dataset.boundExport === '1') return;
+      btn.dataset.boundExport = '1';
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var entity = btn.getAttribute('data-export-csv');
+        if (window.Store) exportCsv(entity, Store.list(entity));
+      });
+    });
+    // Also wire generic "Export" buttons by sniffing text
+    document.querySelectorAll('button').forEach(function (btn) {
+      if (btn.dataset.boundExport === '1') return;
+      var txt = (btn.textContent || '').trim().toLowerCase();
+      if (txt.indexOf('export') !== 0 && txt !== 'export' && txt.indexOf('export csv') === -1 && txt.indexOf('export pdf') === -1) return;
+      btn.dataset.boundExport = '1';
+      btn.addEventListener('click', function (e) {
+        // Don't intercept Reset / unrelated
+        e.preventDefault();
+        var pageEl = document.querySelector('.page[data-page]');
+        var page = pageEl ? pageEl.getAttribute('data-page') : '';
+        var mapping = { contacts: 'contacts', leads: 'leads', deals: 'deals', activities: 'activities', reports: 'deals' };
+        var entity = mapping[page] || 'contacts';
+        if (window.Store) exportCsv(entity, Store.list(entity));
+      });
+    });
+  }
+
+  function exportCsv(entity, records) {
+    if (!records || !records.length) {
+      showToast('Nothing to export', 'warn');
+      return;
+    }
+    var fieldsByEntity = {
+      contacts:   ['name', 'email', 'phone', 'company', 'role', 'status', 'createdAt'],
+      leads:      ['name', 'company', 'source', 'interest', 'stage', 'score', 'owner', 'createdAt'],
+      deals:      ['name', 'company', 'value', 'stage', 'closeDate', 'temp', 'createdAt'],
+      activities: ['type', 'subject', 'company', 'contactName', 'timestamp', 'notes'],
+      tasks:      ['title', 'due', 'priority', 'completed', 'createdAt']
+    };
+    var fields = fieldsByEntity[entity] || Object.keys(records[0]);
+    var head = fields.join(',');
+    var body = records.map(function (r) {
+      return fields.map(function (f) {
+        var v = r[f];
+        if (f === 'timestamp' || f === 'createdAt' || f === 'closeDate') {
+          if (typeof v === 'number') v = new Date(v).toISOString();
+        }
+        if (v == null) v = '';
+        v = String(v);
+        if (v.indexOf(',') !== -1 || v.indexOf('"') !== -1 || v.indexOf('\n') !== -1) {
+          v = '"' + v.replace(/"/g, '""') + '"';
+        }
+        return v;
+      }).join(',');
+    }).join('\n');
+    var csv = head + '\n' + body;
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'crmpro-' + entity + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 500);
+    showToast('Exported ' + records.length + ' ' + entity);
+  }
+
+  /* =============================================================
+     Recently viewed (sidebar section)
+     ============================================================= */
+  function injectRecentlyViewed() {
+    var nav = document.querySelector('.sidebar-nav');
+    if (!nav) return;
+    var existing = nav.querySelector('[data-recent-section]');
+    if (existing) {
+      renderRecentlyViewed();
+      return;
+    }
+    var promo = nav.querySelector('.sidebar-promo');
+    var section = document.createElement('div');
+    section.setAttribute('data-recent-section', '');
+    section.innerHTML =
+      '<div class="sidebar-section">Recent</div>' +
+      '<div data-recent-list></div>';
+    if (promo) nav.insertBefore(section, promo);
+    else nav.appendChild(section);
+    renderRecentlyViewed();
+  }
+
+  function renderRecentlyViewed() {
+    if (!window.Store) return;
+    var listEl = document.querySelector('[data-recent-list]');
+    if (!listEl) return;
+    var recents = Store.getRecentlyViewed(5);
+    if (!recents.length) {
+      listEl.innerHTML = '<div class="sidebar-empty">Nothing recent yet</div>';
+      return;
+    }
+    listEl.innerHTML = recents.map(function (item) {
+      var r = item.record;
+      var name = r.name || r.subject || r.title || '—';
+      var sub = r.company || r.stage || '';
+      var initials = (name || 'NN').split(/\s+/).map(function (p) { return p[0] || ''; }).slice(0, 2).join('').toUpperCase();
+      var iconColor = ({ contacts: '#6366f1', leads: '#8b5cf6', deals: '#0d9488', activities: '#d97706', tasks: '#3b82f6' })[item.entity] || '#71717a';
+      return '<button class="sidebar-recent" data-recent-entity="' + item.entity + '" data-recent-id="' + r.id + '">' +
+        '<span class="sidebar-recent-dot" style="background:' + iconColor + ';"></span>' +
+        '<div class="sidebar-recent-body">' +
+          '<div class="sidebar-recent-name">' + escapeHtml(name) + '</div>' +
+          (sub ? '<div class="sidebar-recent-sub">' + escapeHtml(sub) + '</div>' : '') +
+        '</div>' +
+      '</button>';
+    }).join('');
+
+    listEl.querySelectorAll('[data-recent-entity]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var entity = btn.getAttribute('data-recent-entity');
+        var id = btn.getAttribute('data-recent-id');
+        openDetailPanel(entity, id);
+      });
+    });
+  }
+
+  /* Hook view actions on rows to mark as viewed + open detail panel. */
+  function enhanceRowActions() {
+    document.querySelectorAll('table.data tbody tr').forEach(function (tr) {
+      if (tr.dataset.boundEnhance === '1') return;
+      tr.dataset.boundEnhance = '1';
+      var viewBtn = tr.querySelector('[data-row-action="view"]');
+      if (!viewBtn) return;
+      viewBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var entity = tr.getAttribute('data-entity');
+        var id = tr.getAttribute('data-id');
+        if (entity && id) {
+          openDetailPanel(entity, id);
+          setTimeout(renderRecentlyViewed, 50);
+        }
+      }, true);
+    });
+
+    // Kanban cards — click to view details
+    document.querySelectorAll('.kanban .deal-card, .kanban [data-kanban-card]').forEach(function (card) {
+      if (card.dataset.boundEnhance === '1') return;
+      card.dataset.boundEnhance = '1';
+      card.addEventListener('click', function (e) {
+        // Avoid triggering during drag
+        if (card.classList.contains('dragging')) return;
+        var id = card.dataset.id;
+        var kanban = card.closest('.kanban');
+        var entity = kanban ? kanban.getAttribute('data-entity') : '';
+        if (entity && id) {
+          openDetailPanel(entity, id);
+          setTimeout(renderRecentlyViewed, 50);
+        }
+      });
+    });
+  }
+
+  /* =============================================================
+     Wire Feature Pack into the main scope
+     ============================================================= */
+  var originalInitMainScope = initMainScope;
+  initMainScope = function () {
+    originalInitMainScope();
+    injectTopbarFeatures();
+    injectRecentlyViewed();
+    initBulkActions();
+    initCSVExport();
+    enhanceRowActions();
+  };
+
+  /* ⌘K / Ctrl+K opens the command palette (overrides the earlier
+     focus-search behavior). */
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key && e.key.toLowerCase() === 'k') {
+      // Don't trigger inside palette itself
+      if (paletteOpen) return;
+      e.preventDefault();
+      openCommandPalette('');
+    }
+  });
+
   /* Expose */
-  window.CRMPro = { showToast: showToast, openModal: openModal, navigateTo: navigateTo };
+  window.CRMPro = {
+    showToast: showToast,
+    openModal: openModal,
+    navigateTo: navigateTo,
+    openCommandPalette: openCommandPalette,
+    openDetailPanel: openDetailPanel
+  };
 })();
 
 /* Spinner keyframes */
