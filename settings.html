@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — CRMPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>if (!localStorage.getItem('crmpro_session')) { window.location.replace('login.html'); }</script>
+  <script src="js/store.js"></script>
+</head>
+<body data-page="settings">
+
+  <div class="app">
+    <aside class="sidebar" data-sidebar>
+      <div class="sidebar-brand">
+        <a href="index.html" class="brand">
+          <span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 18V8l8-5 8 5v10"/><path d="M9 22V12h6v10"/></svg></span>
+          CRMPro
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section">Workspace</div>
+        <a href="dashboard.html" class="sidebar-link"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Dashboard</a>
+        <a href="contacts.html" class="sidebar-link"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Contacts <span class="nav-badge">1,248</span></a>
+        <a href="leads.html" class="sidebar-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Leads <span class="nav-badge">356</span></a>
+        <a href="deals.html" class="sidebar-link"><svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M21 3 13.5 10.5"/><path d="M8 21H3v-5"/><path d="m3 21 7.5-7.5"/><path d="M3 8V3h5"/><path d="m3 3 7.5 7.5"/><path d="M16 21h5v-5"/><path d="m13.5 13.5 7.5 7.5"/></svg> Deals</a>
+        <a href="activities.html" class="sidebar-link"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg> Activities</a>
+        <div class="sidebar-section">Insights</div>
+        <a href="reports.html" class="sidebar-link"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6"  y1="20" x2="6"  y2="14"/></svg> Reports</a>
+        <a href="settings.html" class="sidebar-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</a>
+
+        <div class="sidebar-promo">
+          <h5>Upgrade to Pro</h5>
+          <p>Unlock AI insights, custom reports and unlimited automations.</p>
+          <a href="#" data-noop class="btn">Upgrade now</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar av-1">PS</div>
+          <div class="meta"><strong>Priya Sharma</strong><span>Sales Manager</span></div>
+          <i class="fa-solid fa-ellipsis text-soft"></i>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="menu-toggle" data-menu-toggle aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+        <div>
+          <h2>Settings</h2>
+          <div class="crumb"><span>Account</span><i class="fa-solid fa-chevron-right"></i><span>Settings</span></div>
+        </div>
+        <div class="search input-icon">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input class="input" type="search" placeholder="Search settings…" />
+          <span class="kbd">⌘K</span>
+        </div>
+        <div class="actions">
+          <button class="icon-btn" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button>
+          <button class="icon-btn" aria-label="Notifications"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
+          <button class="user-chip" data-noop><div class="avatar av-1">PS</div><span>Priya S.</span><i class="fa-solid fa-chevron-down"></i></button>
+          <button class="btn btn-secondary btn-sm" data-logout><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="page" data-page="settings">
+        <div class="page-head">
+          <div>
+            <h1>Settings</h1>
+            <p class="sub">Manage your profile, notifications, and CRM workspace preferences.</p>
+          </div>
+          <div class="flex gap-8">
+            <button class="btn btn-secondary btn-sm" data-action="reset-demo"><i class="fa-solid fa-arrow-rotate-left"></i> Reset to demo data</button>
+            <button class="btn btn-primary btn-sm" data-action="save-profile"><i class="fa-solid fa-check"></i> Save Changes</button>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+
+          <!-- Profile -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Profile Settings</div>
+                <div class="card-subtitle">Update your personal info and how you appear to your team.</div>
+              </div>
+            </div>
+
+            <div class="profile-head">
+              <div class="avatar lg" data-profile-avatar>PS</div>
+              <div class="meta">
+                <h3 data-profile-name>Priya Sharma</h3>
+                <span data-profile-subtitle>Sales Manager · CRMPro Workspace</span>
+                <a href="#" data-noop class="upload"><i class="fa-solid fa-camera"></i> Upload new photo</a>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:14px;margin-top:24px;flex-wrap:wrap;">
+              <div class="field" style="flex:1;min-width:180px;">
+                <label for="profileFirstName">First Name</label>
+                <input class="input" id="profileFirstName" name="profileFirstName" type="text" />
+              </div>
+              <div class="field" style="flex:1;min-width:180px;">
+                <label for="profileLastName">Last Name</label>
+                <input class="input" id="profileLastName" name="profileLastName" type="text" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="profileEmail">Email Address</label>
+              <div class="input-icon">
+                <i class="fa-regular fa-envelope"></i>
+                <input class="input" id="profileEmail" name="profileEmail" type="email" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="profileJobTitle">Job Title</label>
+              <input class="input" id="profileJobTitle" name="profileJobTitle" type="text" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label for="profileTimezone">Time zone</label>
+              <select class="select" id="profileTimezone" name="profileTimezone">
+                <option>(GMT+05:30) India Standard Time</option>
+                <option>(GMT+00:00) UTC</option>
+                <option>(GMT-05:00) Eastern Time</option>
+                <option>(GMT-08:00) Pacific Time</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Notification Settings</div>
+                <div class="card-subtitle">Choose how and when we reach out to you.</div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="meta">
+                <strong>New lead assignments</strong>
+                <span>Get notified when a new lead is assigned to you.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="notifNewLead"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Deal stage updates</strong>
+                <span>Receive alerts when a deal moves through pipeline stages.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="notifDealStage"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Overdue follow-ups</strong>
+                <span>Daily summary of pending follow-ups across your accounts.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="notifOverdueFollowUp"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Weekly reports</strong>
+                <span>Pipeline summary emailed every Monday morning.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="notifWeeklyReports"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Product newsletter</strong>
+                <span>Tips, updates and best practices — about once a month.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="notifNewsletter"><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <!-- CRM preferences -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">CRM Preferences</div>
+                <div class="card-subtitle">Tailor your workspace experience.</div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Dark mode</strong>
+                <span>Switch the UI between light and dark theme.</span>
+              </div>
+              <label class="switch"><input type="checkbox" data-setting="theme"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Compact table density</strong>
+                <span>Show more rows on screen with reduced padding.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="prefCompactDensity"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Show deal value in pipeline cards</strong>
+                <span>Display dollar amounts on every Kanban card.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="prefShowDealValue"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Auto-assign new leads</strong>
+                <span>Round-robin distribution across active sales reps.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="prefAutoAssignLeads"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Show closed deals on dashboard</strong>
+                <span>Include closed-won deals in the main pipeline view.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="prefShowClosedDeals"><span class="slider"></span></label>
+            </div>
+
+            <div class="field" style="margin-top:18px;margin-bottom:0;">
+              <label for="prefDefaultLanding">Default landing page</label>
+              <select class="select" id="prefDefaultLanding" name="prefDefaultLanding">
+                <option>Dashboard</option>
+                <option>Deals Pipeline</option>
+                <option>Leads</option>
+                <option>Activities</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Security -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Security &amp; Access</div>
+                <div class="card-subtitle">Keep your CRMPro account safe.</div>
+              </div>
+              <span class="badge badge-success">Secure</span>
+            </div>
+
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Two-factor authentication</strong>
+                <span>Add an extra layer of security to your account.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="secTwoFactor"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Login alerts</strong>
+                <span>Email me when there's a sign-in from a new device.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="secLoginAlerts"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="meta">
+                <strong>Single sign-on (SSO)</strong>
+                <span>Use your company Google or Microsoft account.</span>
+              </div>
+              <label class="switch"><input type="checkbox" name="secSSO"><span class="slider"></span></label>
+            </div>
+
+            <div class="field" style="margin-top:18px;">
+              <label>Change password</label>
+              <div class="input-icon">
+                <i class="fa-solid fa-lock"></i>
+                <input class="input" type="password" value="demo-account-password" />
+              </div>
+            </div>
+
+            <div class="flex gap-8" style="margin-top:14px;">
+              <button class="btn btn-secondary btn-sm" data-noop>Reset Password</button>
+              <button class="btn btn-danger btn-sm" data-noop><i class="fa-solid fa-trash"></i> Delete Account</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

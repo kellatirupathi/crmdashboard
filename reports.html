@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports & Insights — CRMPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>if (!localStorage.getItem('crmpro_session')) { window.location.replace('login.html'); }</script>
+  <script src="js/store.js"></script>
+</head>
+<body data-page="reports">
+
+  <div class="app">
+    <aside class="sidebar" data-sidebar>
+      <div class="sidebar-brand">
+        <a href="index.html" class="brand">
+          <span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 18V8l8-5 8 5v10"/><path d="M9 22V12h6v10"/></svg></span>
+          CRMPro
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section">Workspace</div>
+        <a href="dashboard.html" class="sidebar-link"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Dashboard</a>
+        <a href="contacts.html" class="sidebar-link"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Contacts <span class="nav-badge">1,248</span></a>
+        <a href="leads.html" class="sidebar-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Leads <span class="nav-badge">356</span></a>
+        <a href="deals.html" class="sidebar-link"><svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M21 3 13.5 10.5"/><path d="M8 21H3v-5"/><path d="m3 21 7.5-7.5"/><path d="M3 8V3h5"/><path d="m3 3 7.5 7.5"/><path d="M16 21h5v-5"/><path d="m13.5 13.5 7.5 7.5"/></svg> Deals</a>
+        <a href="activities.html" class="sidebar-link"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg> Activities</a>
+        <div class="sidebar-section">Insights</div>
+        <a href="reports.html" class="sidebar-link"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6"  y1="20" x2="6"  y2="14"/></svg> Reports</a>
+        <a href="settings.html" class="sidebar-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</a>
+
+        <div class="sidebar-promo">
+          <h5>Upgrade to Pro</h5>
+          <p>Unlock AI insights, custom reports and unlimited automations.</p>
+          <a href="#" data-noop class="btn">Upgrade now</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar av-1">PS</div>
+          <div class="meta"><strong>Priya Sharma</strong><span>Sales Manager</span></div>
+          <i class="fa-solid fa-ellipsis text-soft"></i>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="menu-toggle" data-menu-toggle aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+        <div>
+          <h2>Reports</h2>
+          <div class="crumb"><span>Insights</span><i class="fa-solid fa-chevron-right"></i><span>Reports</span></div>
+        </div>
+        <div class="search input-icon">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input class="input" type="search" placeholder="Search reports…" />
+          <span class="kbd">⌘K</span>
+        </div>
+        <div class="actions">
+          <button class="icon-btn" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button>
+          <button class="icon-btn" aria-label="Notifications"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
+          <button class="user-chip" data-noop><div class="avatar av-1">PS</div><span>Priya S.</span><i class="fa-solid fa-chevron-down"></i></button>
+          <button class="btn btn-secondary btn-sm" data-logout><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="page" data-page="reports">
+        <div class="page-head">
+          <div>
+            <h1>Reports &amp; Insights</h1>
+            <p class="sub">Pipeline health, conversion trends, and team performance — at a glance.</p>
+          </div>
+          <div class="flex gap-8">
+            <button class="btn btn-secondary btn-sm"><i class="fa-regular fa-calendar"></i> Last 30 days</button>
+            <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-share-nodes"></i> Share</button>
+            <button class="btn btn-primary btn-sm"><i class="fa-solid fa-download"></i> Export PDF</button>
+          </div>
+        </div>
+
+        <!-- KPI cards -->
+        <div class="report-grid">
+          <div class="report-card">
+            <div class="row">
+              <div class="label">Monthly Leads</div>
+              <svg class="spark" viewBox="0 0 60 30" preserveAspectRatio="none"><path d="M0,24 L8,20 L16,22 L24,16 L32,18 L40,12 L48,14 L60,6" fill="none" stroke="#4f46e5" stroke-width="2"/></svg>
+            </div>
+            <div class="value" data-report="monthlyLeads">0</div>
+            <div class="row">
+              <small>vs last month</small>
+              <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 14.2%</span>
+            </div>
+          </div>
+          <div class="report-card">
+            <div class="row">
+              <div class="label">Conversion Rate</div>
+              <svg class="spark" viewBox="0 0 60 30" preserveAspectRatio="none"><path d="M0,18 L8,16 L16,18 L24,14 L32,12 L40,10 L48,8 L60,4" fill="none" stroke="#8b5cf6" stroke-width="2"/></svg>
+            </div>
+            <div class="value" data-report="conversionRate">0%</div>
+            <div class="row">
+              <small>vs last month</small>
+              <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 3.1%</span>
+            </div>
+          </div>
+          <div class="report-card">
+            <div class="row">
+              <div class="label">Revenue Forecast</div>
+              <svg class="spark" viewBox="0 0 60 30" preserveAspectRatio="none"><path d="M0,22 L8,20 L16,22 L24,16 L32,14 L40,10 L48,6 L60,2" fill="none" stroke="#0d9488" stroke-width="2"/></svg>
+            </div>
+            <div class="value" data-report="revenueForecast">$0</div>
+            <div class="row">
+              <small>vs last quarter</small>
+              <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 18.6%</span>
+            </div>
+          </div>
+          <div class="report-card">
+            <div class="row">
+              <div class="label">Team Performance</div>
+              <svg class="spark" viewBox="0 0 60 30" preserveAspectRatio="none"><path d="M0,12 L8,10 L16,14 L24,11 L32,9 L40,12 L48,10 L60,14" fill="none" stroke="#d97706" stroke-width="2"/></svg>
+            </div>
+            <div class="value" data-report="teamPerf">0%</div>
+            <div class="row">
+              <small>vs target</small>
+              <span class="trend down"><i class="fa-solid fa-arrow-down"></i> 1.4%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart + Team targets -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Revenue by Month</div>
+                <div class="card-subtitle">Closed-won revenue · last 8 months</div>
+              </div>
+              <button class="btn btn-ghost btn-sm">Details <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            <div class="area-chart-wrap">
+              <svg viewBox="0 0 520 200" preserveAspectRatio="none" style="overflow: visible;">
+                <defs>
+                  <linearGradient id="chart-grad2" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%"  stop-color="#06b6d4"/>
+                    <stop offset="50%" stop-color="#4f46e5"/>
+                    <stop offset="100%" stop-color="#ec4899"/>
+                  </linearGradient>
+                  <linearGradient id="area-grad2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%"  stop-color="rgba(99,102,241,.35)"/>
+                    <stop offset="100%" stop-color="rgba(99,102,241,0)"/>
+                  </linearGradient>
+                </defs>
+                <g class="y-grid">
+                  <line x1="0" y1="20"  x2="520" y2="20" /><text x="-6" y="24"  text-anchor="end">$130k</text>
+                  <line x1="0" y1="70"  x2="520" y2="70" /><text x="-6" y="74"  text-anchor="end">$95k</text>
+                  <line x1="0" y1="120" x2="520" y2="120"/><text x="-6" y="124" text-anchor="end">$60k</text>
+                  <line x1="0" y1="170" x2="520" y2="170"/><text x="-6" y="174" text-anchor="end">$25k</text>
+                </g>
+                <path fill="url(#area-grad2)" d="M0,158 L70,128 L140,110 L210,118 L280,72 L350,80 L420,38 L490,12 L520,12 L520,200 L0,200 Z"/>
+                <path fill="none" stroke="url(#chart-grad2)" stroke-width="2.5" stroke-linecap="round" d="M0,158 L70,128 L140,110 L210,118 L280,72 L350,80 L420,38 L490,12"/>
+                <g>
+                  <circle class="dot" cx="0"   cy="158" r="4"/>
+                  <circle class="dot" cx="70"  cy="128" r="4"/>
+                  <circle class="dot" cx="140" cy="110" r="4"/>
+                  <circle class="dot" cx="210" cy="118" r="4"/>
+                  <circle class="dot" cx="280" cy="72"  r="4"/>
+                  <circle class="dot" cx="350" cy="80"  r="4"/>
+                  <circle class="dot" cx="420" cy="38"  r="4"/>
+                  <circle class="dot" cx="490" cy="12"  r="5" fill="#4f46e5"/>
+                </g>
+                <g class="x-axis">
+                  <text x="0"   y="195" text-anchor="start">Oct</text>
+                  <text x="70"  y="195" text-anchor="middle">Nov</text>
+                  <text x="140" y="195" text-anchor="middle">Dec</text>
+                  <text x="210" y="195" text-anchor="middle">Jan</text>
+                  <text x="280" y="195" text-anchor="middle">Feb</text>
+                  <text x="350" y="195" text-anchor="middle">Mar</text>
+                  <text x="420" y="195" text-anchor="middle">Apr</text>
+                  <text x="490" y="195" text-anchor="end">May</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Team Targets</div>
+                <div class="card-subtitle">Quota attainment · this quarter</div>
+              </div>
+              <button class="btn btn-ghost btn-sm">View all</button>
+            </div>
+            <div class="progress-row">
+              <div class="label"><div class="avatar sm av-1">PS</div> Priya Sharma</div>
+              <div class="progress"><span style="width: 92%"></span></div>
+              <div class="value">92%</div>
+            </div>
+            <div class="progress-row">
+              <div class="label"><div class="avatar sm av-5">KM</div> Karan Mehta</div>
+              <div class="progress"><span style="width: 78%; opacity: .8;"></span></div>
+              <div class="value">78%</div>
+            </div>
+            <div class="progress-row">
+              <div class="label"><div class="avatar sm av-3">AR</div> Ankita Roy</div>
+              <div class="progress"><span style="width: 64%; opacity: .65;"></span></div>
+              <div class="value">64%</div>
+            </div>
+            <div class="progress-row">
+              <div class="label"><div class="avatar sm av-4">RV</div> Rahul Verma</div>
+              <div class="progress"><span style="width: 54%; opacity: .5;"></span></div>
+              <div class="value">54%</div>
+            </div>
+            <div class="progress-row">
+              <div class="label"><div class="avatar sm av-8">NG</div> Neha Gupta</div>
+              <div class="progress"><span style="width: 41%; opacity: .35;"></span></div>
+              <div class="value">41%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Source breakdown + funnel -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Lead Source Breakdown</div>
+                <div class="card-subtitle">Last 30 days</div>
+              </div>
+              <button class="btn btn-ghost btn-sm">Last 30 days</button>
+            </div>
+            <div data-source-breakdown></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Conversion Funnel</div>
+                <div class="card-subtitle">From visit to closed-won · this quarter</div>
+              </div>
+              <button class="btn btn-ghost btn-sm">Q2 2026</button>
+            </div>
+            <div data-funnel></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

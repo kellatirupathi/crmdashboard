@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leads — CRMPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>if (!localStorage.getItem('crmpro_session')) { window.location.replace('login.html'); }</script>
+  <script src="js/store.js"></script>
+</head>
+<body data-page="leads">
+
+  <div class="app">
+    <aside class="sidebar" data-sidebar>
+      <div class="sidebar-brand">
+        <a href="index.html" class="brand">
+          <span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 18V8l8-5 8 5v10"/><path d="M9 22V12h6v10"/></svg></span>
+          CRMPro
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section">Workspace</div>
+        <a href="dashboard.html" class="sidebar-link"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Dashboard</a>
+        <a href="contacts.html" class="sidebar-link"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Contacts <span class="nav-badge">1,248</span></a>
+        <a href="leads.html" class="sidebar-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Leads <span class="nav-badge">356</span></a>
+        <a href="deals.html" class="sidebar-link"><svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M21 3 13.5 10.5"/><path d="M8 21H3v-5"/><path d="m3 21 7.5-7.5"/><path d="M3 8V3h5"/><path d="m3 3 7.5 7.5"/><path d="M16 21h5v-5"/><path d="m13.5 13.5 7.5 7.5"/></svg> Deals</a>
+        <a href="activities.html" class="sidebar-link"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg> Activities</a>
+        <div class="sidebar-section">Insights</div>
+        <a href="reports.html" class="sidebar-link"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6"  y1="20" x2="6"  y2="14"/></svg> Reports</a>
+        <a href="settings.html" class="sidebar-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</a>
+
+        <div class="sidebar-promo">
+          <h5>Upgrade to Pro</h5>
+          <p>Unlock AI insights, custom reports and unlimited automations.</p>
+          <a href="#" data-noop class="btn">Upgrade now</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar av-1">PS</div>
+          <div class="meta"><strong>Priya Sharma</strong><span>Sales Manager</span></div>
+          <i class="fa-solid fa-ellipsis text-soft"></i>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="menu-toggle" data-menu-toggle aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+        <div>
+          <h2>Leads</h2>
+          <div class="crumb"><span>Workspace</span><i class="fa-solid fa-chevron-right"></i><span>Leads</span></div>
+        </div>
+        <div class="search input-icon">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input class="input" type="search" placeholder="Search leads…" />
+          <span class="kbd">⌘K</span>
+        </div>
+        <div class="actions">
+          <button class="icon-btn" aria-label="Help"><i class="fa-regular fa-circle-question"></i></button>
+          <button class="icon-btn" aria-label="Notifications"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
+          <button class="user-chip" data-noop><div class="avatar av-1">PS</div><span>Priya S.</span><i class="fa-solid fa-chevron-down"></i></button>
+          <button class="btn btn-secondary btn-sm" data-logout><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="page" data-page="leads">
+        <div class="page-head">
+          <div>
+            <h1>Leads</h1>
+            <p class="sub">Track and qualify every opportunity in your funnel.</p>
+          </div>
+          <div class="flex gap-8" style="align-items:center;">
+            <div class="view-toggle" data-view-toggle="leads-view">
+              <button data-view="list" class="active" type="button">
+                <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                List
+              </button>
+              <button data-view="pipeline" type="button">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="11" rx="1"/></svg>
+                Pipeline
+              </button>
+            </div>
+            <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-file-import"></i> Import</button>
+            <button class="btn btn-primary btn-sm" data-modal-open="add-lead"><i class="fa-solid fa-plus"></i> Add Lead</button>
+          </div>
+        </div>
+
+        <!-- Lead summary cards -->
+        <div class="stat-grid">
+          <div class="stat-card indigo">
+            <div class="head">
+              <div class="label">Total Leads</div>
+              <div class="ico"><svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></div>
+            </div>
+            <div class="value" data-kpi="leadsTotal">0</div>
+            <div class="row">
+              <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 6.8%</span>
+              <span class="vs">112 new this month</span>
+            </div>
+          </div>
+          <div class="stat-card purple">
+            <div class="head">
+              <div class="label">Qualified</div>
+              <div class="ico"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div class="value" data-kpi="leadsQualified">0</div>
+            <div class="row">
+              <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 12.3%</span>
+              <span class="vs">38% of all leads</span>
+            </div>
+          </div>
+          <div class="stat-card teal">
+            <div class="head">
+              <div class="label">In Proposal</div>
+              <div class="ico"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            </div>
+            <div class="value" data-kpi="leadsProposal">0</div>
+            <div class="row">
+              <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 4.1%</span>
+              <span class="vs">$148K total value</span>
+            </div>
+          </div>
+          <div class="stat-card amber">
+            <div class="head">
+              <div class="label">Conversion Rate</div>
+              <div class="ico"><svg viewBox="0 0 24 24" stroke="currentColor"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div>
+            </div>
+            <div class="value" data-kpi="leadsConversion">0%</div>
+            <div class="row">
+              <span class="trend down"><i class="fa-solid fa-arrow-down"></i> 1.2%</span>
+              <span class="vs">vs Q1 baseline</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-view-content="list" style="margin-top:22px;">
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <div class="search input-icon" style="max-width:340px;flex:1;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input class="input" type="search" placeholder="Search by lead, source, owner…" data-search-target="#leads-table" />
+            </div>
+            <div class="filter-chips" data-filter-table="#leads-table">
+              <span class="chip is-on">All Stages</span>
+              <span class="chip">New</span>
+              <span class="chip">Contacted</span>
+              <span class="chip">Qualified</span>
+              <span class="chip">Proposal</span>
+            </div>
+            <div class="flex gap-8">
+              <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-tag"></i> Source</button>
+              <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-arrow-down-wide-short"></i> Sort</button>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table class="data" id="leads-table">
+              <thead>
+                <tr>
+                  <th style="width:24px;"><input type="checkbox" /></th>
+                  <th>Lead Name</th>
+                  <th>Source</th>
+                  <th>Interest</th>
+                  <th>Stage</th>
+                  <th>Score</th>
+                  <th>Assigned To</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <div data-pagination-info>Showing <strong>1–10</strong> of <strong>0</strong> leads</div>
+            <div class="pages">
+              <button><i class="fa-solid fa-chevron-left"></i></button>
+              <button class="active">1</button>
+              <button>2</button>
+              <button>3</button>
+              <button>…</button>
+              <button>43</button>
+              <button><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+        </div><!-- /list view -->
+
+        <!-- Pipeline (kanban) view — drag leads between stages -->
+        <div data-view-content="pipeline" style="display:none; margin-top:22px;">
+          <div class="card" style="padding:14px 16px; margin-bottom:14px;">
+            <div class="flex between gap-12" style="flex-wrap:wrap;">
+              <div class="flex gap-8" style="align-items:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--muted);"><path d="M3 3h18M3 12h18M3 21h18"/></svg>
+                <strong style="font-size:13.5px;">Drag leads</strong>
+                <span class="text-muted text-sm">between stages to update their status.</span>
+              </div>
+              <div class="filter-chips" data-filter-kanban="leads">
+                <span class="chip is-on">All sources</span>
+                <span class="chip">Website</span>
+                <span class="chip">LinkedIn</span>
+                <span class="chip">Referral</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="kanban" data-dnd="kanban" id="leads-kanban"></div><!-- /pipeline view -->
+      </section>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
